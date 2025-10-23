@@ -41,6 +41,9 @@
         .tab-content.active {
             @apply block;
         }
+        .math-notation {
+            @apply font-mono text-indigo-700 font-semibold;
+        }
     </style>
     <!-- Chosen Palette: Calm Harmony (Stone background, Indigo accent) -->
     <!-- Application Structure Plan: Designed as an interactive single-page lesson. A top nav allows jumping to sections: 'Why Analyze?', 'How We Measure', 'The Big Idea (Asymptotics)', and 'Big O Explorer'. This structure transforms the static report into a learning tool by first motivating the user (Why), then defining terms (How), then visualizing the core concept (Big Idea), and finally letting them explore the practical details (Big O Explorer). This is more engaging than the report's linear text. -->
@@ -95,32 +98,32 @@
         <section id="why" class="mb-16">
             <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">Why Analyze Efficiency?</h2>
             <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
-                Why not just use a faster computer? The answer is **scalability**. As your input size ($N$) grows, the difference between an efficient and inefficient algorithm becomes massive. This interactive calculator demonstrates the difference.
+                Why not just use a faster computer? The answer is **scalability**. As your input size (<span class="math-notation">N</span>) grows, the difference between an efficient and inefficient algorithm becomes massive. This interactive calculator demonstrates the difference.
             </p>
             <div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
                 <h3 class="text-2xl font-semibold text-center mb-4">Scalability Calculator</h3>
-                <p class="text-center text-stone-600 mb-4">Enter an input size ($N$) and see the estimated operations for two different algorithms. Assume 1 operation takes 1 microsecond (0.000001s).</p>
+                <p class="text-center text-stone-600 mb-4">Enter an input size (<span class="math-notation">N</span>) and see the estimated operations for two different algorithms. Assume 1 operation takes 1 microsecond (0.000001s).</p>
                 
                 <div class="mb-4">
-                    <label for="inputN" class="block text-sm font-medium text-stone-700 mb-1">Input Size ($N$):</label>
+                    <label for="inputN" class="block text-sm font-medium text-stone-700 mb-1">Input Size (<span class="math-notation">N</span>):</label>
                     <input type="number" id="inputN" value="1000" class="w-full border-stone-300 rounded-md shadow-sm p-2" oninput="updateScalabilityCalc()">
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-stone-50 p-4 rounded-lg border">
-                        <h4 class="font-bold text-lg text-indigo-700">Linear Algorithm: $O(n)$</h4>
+                        <h4 class="font-bold text-lg text-indigo-700">Linear Algorithm: <span class="math-notation">O(n)</span></h4>
                         <p class="text-2xl font-semibold text-stone-900" id="linearOps">1,000</p>
                         <p class="text-stone-600 mb-2">Operations</p>
                         <p class="text-lg font-medium text-green-600" id="linearTime">0.001 seconds</p>
                     </div>
                     <div class="bg-stone-50 p-4 rounded-lg border">
-                        <h4 class="font-bold text-lg text-red-700">Quadratic Algorithm: $O(n^2)$</h4>
+                        <h4 class="font-bold text-lg text-red-700">Quadratic Algorithm: <span class="math-notation">O(n²)</span></h4>
                         <p class="text-2xl font-semibold text-stone-900" id="quadraticOps">1,000,000</p>
                         <p class="text-stone-600 mb-2">Operations</p>
                         <p class="text-lg font-medium text-red-600" id="quadraticTime">1.000 second</p>
                     </div>
                 </div>
-                <p class="text-center text-sm text-stone-500 mt-4">Try setting $N$ to 100,000 or 1,000,000!</p>
+                <p class="text-center text-sm text-stone-500 mt-4">Try setting <span class="math-notation">N</span> to 100,000 or 1,000,000!</p>
             </div>
         </section>
 
@@ -131,29 +134,29 @@
             </p>
             <div class="max-w-4xl mx-auto">
                 <div class="flex flex-wrap justify-center gap-2 mb-4 p-2 bg-stone-100 rounded-lg">
-                    <button class="tab-btn active" onclick="showTab('measure', 'tab-running-time')">Running Time $T(n)$</button>
+                    <button class="tab-btn active" onclick="showTab('measure', 'tab-running-time')">Running Time <span class="math-notation">T(n)</span></button>
                     <button class="tab-btn" onclick="showTab('measure', 'tab-cases')">Analysis Cases</button>
                     <button class="tab-btn" onclick="showTab('measure', 'tab-types')">Analysis Types</button>
                 </div>
 
                 <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
                     <div id="tab-running-time" class="tab-content active">
-                        <h3 class="text-2xl font-semibold mb-4 text-indigo-700">The Running Time Function, $T(n)$</h3>
-                        <p class="text-stone-700 mb-4">We express running time as a function $T(n)$, where:</p>
+                        <h3 class="text-2xl font-semibold mb-4 text-indigo-700">The Running Time Function, <span class="math-notation">T(n)</span></h3>
+                        <p class="text-stone-700 mb-4">We express running time as a function <span class="math-notation">T(n)</span>, where:</p>
                         <ul class="list-disc list-inside space-y-2">
-                            <li><strong>$T$ (Time):</strong> The number of *elementary operations* (assignments, comparisons, math operations). We count operations, not seconds, to be machine-independent.</li>
-                            <li><strong>$n$ (Input Size):</strong> A measure of the input's size (e.g., number of items in a list).</li>
+                            <li><strong><span class="math-notation">T</span> (Time):</strong> The number of *elementary operations* (assignments, comparisons, math operations). We count operations, not seconds, to be machine-independent.</li>
+                            <li><strong><span class="math-notation">n</span> (Input Size):</strong> A measure of the input's size (e.g., number of items in a list).</li>
                         </ul>
                         <p class="mt-4 p-4 bg-stone-50 rounded-md text-stone-800">
-                            <strong>Example (Summing an array):</strong> $T(n) = c_1 \cdot n + c_2$
+                            <strong>Example (Summing an array):</strong> <span class="math-notation">T(n) = c₁ &middot; n + c₂</span>
                             <br>
-                            This function shows the time is linearly proportional to the input size $n$.
+                            This function shows the time is linearly proportional to the input size <span class="math-notation">n</span>.
                         </p>
                     </div>
 
                     <div id="tab-cases" class="tab-content">
                         <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Best, Worst, and Average-Case</h3>
-                        <p class="text-stone-700 mb-4">An algorithm's performance can change based on the specific input, even for the same $n$.</p>
+                        <p class="text-stone-700 mb-4">An algorithm's performance can change based on the specific input, even for the same <span class="math-notation">n</span>.</p>
                         <ul class="space-y-3">
                             <li><strong>Worst-Case:</strong> The input that causes the *maximum* number of operations. This is our most important measure as it provides a performance guarantee.</li>
                             <li><strong>Best-Case:</strong> The input that causes the *minimum* number of operations. This is often misleading and rarely used.</li>
@@ -176,19 +179,19 @@
         <section id="big-idea" class="mb-16">
             <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">The Big Idea: Asymptotic Analysis</h2>
             <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
-                For large inputs, the constants and lower-order terms in $T(n)$ don't matter. We only care about the **rate of growth** as $n$ gets infinitely large.
+                For large inputs, the constants and lower-order terms in <span class="math-notation">T(n)</span> don't matter. We only care about the **rate of growth** as <span class="math-notation">n</span> gets infinitely large.
             </p>
             <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
                 <h3 class="text-2xl font-semibold text-center mb-4">Interactive Example</h3>
-                <p class="text-center text-stone-600 mb-4">Let's analyze $T(n) = 5n^2 + 100n + 500$. As $n$ grows, watch how the dominant term ($5n^2$) becomes almost identical to the full function.
+                <p class="text-center text-stone-600 mb-4">Let's analyze <span class="math-notation">T(n) = 5n² + 100n + 500</span>. As <span class="math-notation">n</span> grows, watch how the dominant term (<span class="math-notation">5n²</span>) becomes almost identical to the full function.
                 </p>
                 <div class="chart-container">
                     <canvas id="asymptoticChart"></canvas>
                 </div>
                 <div class="mt-6">
-                    <label for="nSlider" class="block text-sm font-medium text-stone-700 mb-1">Drag to adjust $n$ (from 1 to 100)</label>
+                    <label for="nSlider" class="block text-sm font-medium text-stone-700 mb-1">Drag to adjust <span class="math-notation">n</span> (from 1 to 100)</label>
                     <input type="range" id="nSlider" min="1" max="100" value="10" class="w-full" oninput="updateAsymptoticChart(this.value)">
-                    <p class="text-center font-medium">Current $N$: <span id="nValue">10</span></p>
+                    <p class="text-center font-medium">Current <span class="math-notation">N</span>: <span id="nValue">10</span></p>
                 </div>
             </div>
         </section>
@@ -202,10 +205,10 @@
             <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg mb-12">
                 <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Formal Definition</h3>
                 <p class="text-stone-700">
-                    We say $T(n) = O(g(n))$ if there exist positive constants $c$ and $n_0$ such that $T(n) \le c \cdot g(n)$ for all $n \ge n_0$.
+                    We say <span class="math-notation">T(n) = O(g(n))</span> if there exist positive constants <span class="math-notation">c</span> and <span class="math-notation">n₀</span> such that <span class="math-notation">T(n) &le; c &middot; g(n)</span> for all <span class="math-notation">n &ge; n₀</span>.
                 </p>
                 <p class="mt-2 text-stone-600">
-                    In plain English: "For large enough inputs ($n$), the running time $T(n)$ grows **no faster than** $g(n)$."
+                    In plain English: "For large enough inputs (<span class="math-notation">n</span>), the running time <span class="math-notation">T(n)</span> grows **no faster than** <span class="math-notation">g(n)</span>."
                 </p>
             </div>
 
@@ -224,27 +227,27 @@
                     <div class="space-y-2">
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-blue-500" checked onchange="toggleBigOData(0)">
-                            <span class="text-blue-500 font-medium">$O(1)$ - Constant</span>
+                            <span class="text-blue-500 font-medium"><span class="math-notation">O(1)</span> - Constant</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-green-500" checked onchange="toggleBigOData(1)">
-                            <span class="text-green-500 font-medium">$O(\log n)$ - Logarithmic</span>
+                            <span class="text-green-500 font-medium"><span class="math-notation">O(log n)</span> - Logarithmic</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-indigo-500" checked onchange="toggleBigOData(2)">
-                            <span class="text-indigo-500 font-medium">$O(n)$ - Linear</span>
+                            <span class="text-indigo-500 font-medium"><span class="math-notation">O(n)</span> - Linear</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-purple-500" checked onchange="toggleBigOData(3)">
-                            <span class="text-purple-500 font-medium">$O(n \log n)$ - Log-Linear</span>
+                            <span class="text-purple-500 font-medium"><span class="math-notation">O(n log n)</span> - Log-Linear</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-orange-500" checked onchange="toggleBigOData(4)">
-                            <span class="text-orange-500 font-medium">$O(n^2)$ - Quadratic</span>
+                            <span class="text-orange-500 font-medium"><span class="math-notation">O(n²)</span> - Quadratic</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" class="rounded text-red-500" onchange="toggleBigOData(5)">
-                            <span class="text-red-500 font-medium">$O(2^n)$ - Exponential</span>
+                            <span class="text-red-500 font-medium"><span class="math-notation">O(2ⁿ)</span> - Exponential</span>
                         </label>
                     </div>
                 </div>
@@ -256,42 +259,42 @@
             </p>
             <div class="max-w-5xl mx-auto">
                 <div class="flex flex-wrap justify-center gap-2 mb-4 p-2 bg-stone-100 rounded-lg">
-                    <button class="tab-btn active" onclick="showTab('big-o-explorer', 'tab-o1')">$O(1)$</button>
-                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-ologn')">$O(\log n)$</button>
-                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on')">$O(n)$</button>
-                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-onlogn')">$O(n \log n)$</button>
-                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on2')">$O(n^2)$</button>
-                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-o2n')">$O(2^n)$</button>
+                    <button class="tab-btn active" onclick="showTab('big-o-explorer', 'tab-o1')"><span class="math-notation">O(1)</span></button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-ologn')"><span class="math-notation">O(log n)</span></button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on')"><span class="math-notation">O(n)</span></button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-onlogn')"><span class="math-notation">O(n log n)</span></button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on2')"><span class="math-notation">O(n²)</span></button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-o2n')"><span class="math-notation">O(2ⁿ)</span></button>
                 </div>
                 <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg min-h-[150px]">
                     <div id="tab-o1" class="tab-content active">
-                        <h4 class="text-2xl font-semibold mb-2 text-blue-600">Constant Time: $O(1)$</h4>
-                        <p class="text-stone-700">Time is fixed, regardless of the input size $n$.</p>
+                        <h4 class="text-2xl font-semibold mb-2 text-blue-600">Constant Time: <span class="math-notation">O(1)</span></h4>
+                        <p class="text-stone-700">Time is fixed, regardless of the input size <span class="math-notation">n</span>.</p>
                         <p class="mt-2 text-stone-600"><strong>Example:</strong> Array lookup by index (`my_array[5]`); Pushing/Popping on a stack.</p>
                     </div>
                     <div id="tab-ologn" class="tab-content">
-                        <h4 class="text-2xl font-semibold mb-2 text-green-600">Logarithmic Time: $O(\log n)$</h4>
-                        <p class="text-stone-700">Time grows very slowly as $n$ increases. Typically involves halving the search space repeatedly.</p>
+                        <h4 class="text-2xl font-semibold mb-2 text-green-600">Logarithmic Time: <span class="math-notation">O(log n)</span></h4>
+                        <p class="text-stone-700">Time grows very slowly as <span class="math-notation">n</span> increases. Typically involves halving the search space repeatedly.</p>
                         <p class="mt-2 text-stone-600"><strong>Example:</strong> Binary Search on a sorted array.</p>
                     </div>
                     <div id="tab-on" class="tab-content">
-                        <h4 class="text-2xl font-semibold mb-2 text-indigo-600">Linear Time: $O(n)$</h4>
-                        <p class="text-stone-700">Time grows directly proportional to $n$. If $n$ doubles, the time doubles.</p>
-                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Finding the maximum value in an unsorted array; A single loop from 1 to $n$.</p>
+                        <h4 class="text-2xl font-semibold mb-2 text-indigo-600">Linear Time: <span class="math-notation">O(n)</span></h4>
+                        <p class="text-stone-700">Time grows directly proportional to <span class="math-notation">n</span>. If <span class="math-notation">n</span> doubles, the time doubles.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Finding the maximum value in an unsorted array; A single loop from 1 to <span class="math-notation">n</span>.</p>
                     </div>
                     <div id="tab-onlogn" class="tab-content">
-                        <h4 class="text-2xl font-semibold mb-2 text-purple-600">Log-Linear Time: $O(n \log n)$</h4>
+                        <h4 class="text-2xl font-semibold mb-2 text-purple-600">Log-Linear Time: <span class="math-notation">O(n log n)</span></h4>
                         <p class="text-stone-700">A very common and efficient complexity for sorting algorithms.</p>
                         <p class="mt-2 text-stone-600"><strong>Example:</strong> Merge Sort, Heap Sort.</p>
                     </div>
                     <div id="tab-on2" class="tab-content">
-                        <h4 class="text-2xl font-semibold mb-2 text-orange-600">Quadratic Time: $O(n^2)$</h4>
-                        <p class="text-stone-700">Time grows quadratically. Usually involves nested loops where both iterate up to $n$. Becomes slow for large $n$.</p>
+                        <h4 class="text-2xl font-semibold mb-2 text-orange-600">Quadratic Time: <span class="math-notation">O(n²)</span></h4>
+                        <p class="text-stone-700">Time grows quadratically. Usually involves nested loops where both iterate up to <span class="math-notation">n</span>. Becomes slow for large <span class="math-notation">n</span>.</p>
                         <p class="mt-2 text-stone-600"><strong>Example:</strong> Selection Sort, Insertion Sort, Bubble Sort; A nested loop (e.g., `for i in n: for j in n:`).</p>
                     </div>
                     <div id="tab-o2n" class="tab-content">
-                        <h4 class="text-2xl font-semibold mb-2 text-red-600">Exponential Time: $O(2^n)$</h4>
-                        <p class="text-stone-700">Time doubles with every new element added to the input. Becomes intractable (unsolvable) for even moderately large $n$.</p>
+                        <h4 class="text-2xl font-semibold mb-2 text-red-600">Exponential Time: <span class="math-notation">O(2ⁿ)</span></h4>
+                        <p class="text-stone-700">Time doubles with every new element added to the input. Becomes intractable (unsolvable) for even moderately large <span class="math-notation">n</span>.</p>
                         <p class="mt-2 text-stone-600"><strong>Example:</strong> Traveling Salesperson Problem (brute force solution).</p>
                     </div>
                 </div>
