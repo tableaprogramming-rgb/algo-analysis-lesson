@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Analysis of Algorithms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .tab-btn {
+            @apply px-4 py-2 font-medium text-sm rounded-md transition-all;
+        }
+        .tab-btn.active {
+            @apply bg-indigo-600 text-white shadow-md;
+        }
+        .tab-btn:not(.active) {
+            @apply text-stone-600 hover:bg-stone-100;
+        }
+        .tab-content {
+            @apply hidden;
+        }
+        .tab-content.active {
+            @apply block;
+        }
+    </style>
+    <!-- Chosen Palette: Calm Harmony (Stone background, Indigo accent) -->
+    <!-- Application Structure Plan: Designed as an interactive single-page lesson. A top nav allows jumping to sections: 'Why Analyze?', 'How We Measure', 'The Big Idea (Asymptotics)', and 'Big O Explorer'. This structure transforms the static report into a learning tool by first motivating the user (Why), then defining terms (How), then visualizing the core concept (Big Idea), and finally letting them explore the practical details (Big O Explorer). This is more engaging than the report's linear text. -->
+    <!-- Visualization & Content Choices: 'Why Analyze' (Scalability) -> Goal: Demonstrate -> JS-powered text calculator -> Interaction: User input for 'n' -> Justification: Makes the abstract cost of O(N^2) tangible. 'Asymptotic Analysis' ($5n^2+100n+500$) -> Goal: Show term dominance -> Chart.js Line Chart (comparing full vs. dominant term) -> Interaction: Slider for 'n' updates chart -> Justification: Visually proves *why* lower terms are dropped. 'Common Growth Rates' -> Goal: Compare -> Chart.js Line Chart -> Interaction: Toggles for each O(n) class -> Justification: Lets students build the comparison themselves. 'Growth Rate Examples' -> Goal: Inform/Organize -> JS-powered content switcher -> Interaction: Click buttons for O(1), O(n), etc. -> Justification: Connects abstract notation to concrete examples. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-600">Analysis of Algorithms</h1>
+            <div class="hidden sm:flex space-x-2">
+                <button onclick="scrollToSection('intro')" class="tab-btn active">Start</button>
+                <button onclick="scrollToSection('why')" class="tab-btn">Why?</button>
+                <button onclick="scrollToSection('how')" class="tab-btn">How?</button>
+                <button onclick="scrollToSection('big-idea')" class="tab-btn">Big Idea</button>
+                <button onclick="scrollToSection('big-o')" class="tab-btn">Big O</button>
+            </div>
+            <div class="sm:hidden">
+                <select onchange="scrollToSection(this.value)" class="border-stone-300 rounded-md shadow-sm">
+                    <option value="intro">Start</option>
+                    <option value="why">Why?</option>
+                    <option value="how">How?</option>
+                    <option value="big-idea">Big Idea</option>
+                    <option value="big-o">Big O</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+        <section id="intro" class="mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">What is Algorithm Analysis?</h2>
+            <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                <p class="text-lg text-stone-700 mb-4">
+                    Algorithm analysis is the process of determining the amount of resources (like time and storage) necessary to execute an algorithm. When we build software, we care about two main things:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-blue-800 mb-2">1. Correctness</h3>
+                        <p class="text-stone-600">Does the algorithm produce the right output for every valid input? This is always the most important goal.</p>
+                    </div>
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-green-800 mb-2">2. Efficiency</h3>
+                        <p class="text-stone-600">How effectively does the algorithm use computational resources? This is the focus of our analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="why" class="mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">Why Analyze Efficiency?</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                Why not just use a faster computer? The answer is **scalability**. As your input size ($N$) grows, the difference between an efficient and inefficient algorithm becomes massive. This interactive calculator demonstrates the difference.
+            </p>
+            <div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-semibold text-center mb-4">Scalability Calculator</h3>
+                <p class="text-center text-stone-600 mb-4">Enter an input size ($N$) and see the estimated operations for two different algorithms. Assume 1 operation takes 1 microsecond (0.000001s).</p>
+                
+                <div class="mb-4">
+                    <label for="inputN" class="block text-sm font-medium text-stone-700 mb-1">Input Size ($N$):</label>
+                    <input type="number" id="inputN" value="1000" class="w-full border-stone-300 rounded-md shadow-sm p-2" oninput="updateScalabilityCalc()">
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-stone-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg text-indigo-700">Linear Algorithm: $O(n)$</h4>
+                        <p class="text-2xl font-semibold text-stone-900" id="linearOps">1,000</p>
+                        <p class="text-stone-600 mb-2">Operations</p>
+                        <p class="text-lg font-medium text-green-600" id="linearTime">0.001 seconds</p>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-lg border">
+                        <h4 class="font-bold text-lg text-red-700">Quadratic Algorithm: $O(n^2)$</h4>
+                        <p class="text-2xl font-semibold text-stone-900" id="quadraticOps">1,000,000</p>
+                        <p class="text-stone-600 mb-2">Operations</p>
+                        <p class="text-lg font-medium text-red-600" id="quadraticTime">1.000 second</p>
+                    </div>
+                </div>
+                <p class="text-center text-sm text-stone-500 mt-4">Try setting $N$ to 100,000 or 1,000,000!</p>
+            </div>
+        </section>
+
+        <section id="how" class="mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">How Do We Measure?</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                To compare algorithms fairly, we need a machine-independent way to measure them. This section covers the core concepts we use for formal analysis.
+            </p>
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-wrap justify-center gap-2 mb-4 p-2 bg-stone-100 rounded-lg">
+                    <button class="tab-btn active" onclick="showTab('measure', 'tab-running-time')">Running Time $T(n)$</button>
+                    <button class="tab-btn" onclick="showTab('measure', 'tab-cases')">Analysis Cases</button>
+                    <button class="tab-btn" onclick="showTab('measure', 'tab-types')">Analysis Types</button>
+                </div>
+
+                <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                    <div id="tab-running-time" class="tab-content active">
+                        <h3 class="text-2xl font-semibold mb-4 text-indigo-700">The Running Time Function, $T(n)$</h3>
+                        <p class="text-stone-700 mb-4">We express running time as a function $T(n)$, where:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>$T$ (Time):</strong> The number of *elementary operations* (assignments, comparisons, math operations). We count operations, not seconds, to be machine-independent.</li>
+                            <li><strong>$n$ (Input Size):</strong> A measure of the input's size (e.g., number of items in a list).</li>
+                        </ul>
+                        <p class="mt-4 p-4 bg-stone-50 rounded-md text-stone-800">
+                            <strong>Example (Summing an array):</strong> $T(n) = c_1 \cdot n + c_2$
+                            <br>
+                            This function shows the time is linearly proportional to the input size $n$.
+                        </p>
+                    </div>
+
+                    <div id="tab-cases" class="tab-content">
+                        <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Best, Worst, and Average-Case</h3>
+                        <p class="text-stone-700 mb-4">An algorithm's performance can change based on the specific input, even for the same $n$.</p>
+                        <ul class="space-y-3">
+                            <li><strong>Worst-Case:</strong> The input that causes the *maximum* number of operations. This is our most important measure as it provides a performance guarantee.</li>
+                            <li><strong>Best-Case:</strong> The input that causes the *minimum* number of operations. This is often misleading and rarely used.</li>
+                            <li><strong>Average-Case:</strong> The average time over all possible inputs. This is realistic but often very complex to calculate.</li>
+                        </ul>
+                    </div>
+
+                    <div id="tab-types" class="tab-content">
+                        <h3 class="text-2xl font-semibold mb-4 text-indigo-700">A Priori vs. A Posteriori Analysis</h3>
+                        <p class="text-stone-700 mb-4">These are the two main methods for conducting analysis.</p>
+                        <ul class="space-y-3">
+                            <li><strong>A Priori (Theoretical):</strong> Analysis done *before* coding. It uses math to count operations and find the growth rate (like Big O). It is machine-independent and is the focus of computer science.</li>
+                            <li><strong>A Posteriori (Empirical):</strong> Analysis done *after* coding. It involves running the program and measuring its actual time in seconds. This is useful for benchmarking but is dependent on hardware, language, and compiler.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="big-idea" class="mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">The Big Idea: Asymptotic Analysis</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                For large inputs, the constants and lower-order terms in $T(n)$ don't matter. We only care about the **rate of growth** as $n$ gets infinitely large.
+            </p>
+            <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-semibold text-center mb-4">Interactive Example</h3>
+                <p class="text-center text-stone-600 mb-4">Let's analyze $T(n) = 5n^2 + 100n + 500$. As $n$ grows, watch how the dominant term ($5n^2$) becomes almost identical to the full function.
+                </p>
+                <div class="chart-container">
+                    <canvas id="asymptoticChart"></canvas>
+                </div>
+                <div class="mt-6">
+                    <label for="nSlider" class="block text-sm font-medium text-stone-700 mb-1">Drag to adjust $n$ (from 1 to 100)</label>
+                    <input type="range" id="nSlider" min="1" max="100" value="10" class="w-full" oninput="updateAsymptoticChart(this.value)">
+                    <p class="text-center font-medium">Current $N$: <span id="nValue">10</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="big-o" class="mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">Big O Notation: The Formal Tool</h2>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                Big O notation gives us a formal language to talk about the **asymptotic upper bound** of an algorithm's running time. It classifies algorithms by their growth rate.
+            </p>
+            
+            <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg mb-12">
+                <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Formal Definition</h3>
+                <p class="text-stone-700">
+                    We say $T(n) = O(g(n))$ if there exist positive constants $c$ and $n_0$ such that $T(n) \le c \cdot g(n)$ for all $n \ge n_0$.
+                </p>
+                <p class="mt-2 text-stone-600">
+                    In plain English: "For large enough inputs ($n$), the running time $T(n)$ grows **no faster than** $g(n)$."
+                </p>
+            </div>
+
+            <h3 class="text-3xl font-bold text-center mb-6">Comparing Growth Rates</h3>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                This chart visualizes the common complexity classes. Use the toggles to see how quickly each one grows. A "flatter" line is more efficient.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <div class="chart-container" style="height: 400px; max-height: 500px;">
+                        <canvas id="bigOChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-semibold mb-4">Toggle Classes</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-blue-500" checked onchange="toggleBigOData(0)">
+                            <span class="text-blue-500 font-medium">$O(1)$ - Constant</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-green-500" checked onchange="toggleBigOData(1)">
+                            <span class="text-green-500 font-medium">$O(\log n)$ - Logarithmic</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-indigo-500" checked onchange="toggleBigOData(2)">
+                            <span class="text-indigo-500 font-medium">$O(n)$ - Linear</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-purple-500" checked onchange="toggleBigOData(3)">
+                            <span class="text-purple-500 font-medium">$O(n \log n)$ - Log-Linear</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-orange-500" checked onchange="toggleBigOData(4)">
+                            <span class="text-orange-500 font-medium">$O(n^2)$ - Quadratic</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="rounded text-red-500" onchange="toggleBigOData(5)">
+                            <span class="text-red-500 font-medium">$O(2^n)$ - Exponential</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-3xl font-bold text-center mt-16 mb-6">Explore the Classes</h3>
+            <p class="text-lg text-center max-w-3xl mx-auto mb-8 text-stone-700">
+                Click on a complexity class to see what it means and a common example.
+            </p>
+            <div class="max-w-5xl mx-auto">
+                <div class="flex flex-wrap justify-center gap-2 mb-4 p-2 bg-stone-100 rounded-lg">
+                    <button class="tab-btn active" onclick="showTab('big-o-explorer', 'tab-o1')">$O(1)$</button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-ologn')">$O(\log n)$</button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on')">$O(n)$</button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-onlogn')">$O(n \log n)$</button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-on2')">$O(n^2)$</button>
+                    <button class="tab-btn" onclick="showTab('big-o-explorer', 'tab-o2n')">$O(2^n)$</button>
+                </div>
+                <div class="bg-white p-6 sm:p-8 rounded-lg shadow-lg min-h-[150px]">
+                    <div id="tab-o1" class="tab-content active">
+                        <h4 class="text-2xl font-semibold mb-2 text-blue-600">Constant Time: $O(1)$</h4>
+                        <p class="text-stone-700">Time is fixed, regardless of the input size $n$.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Array lookup by index (`my_array[5]`); Pushing/Popping on a stack.</p>
+                    </div>
+                    <div id="tab-ologn" class="tab-content">
+                        <h4 class="text-2xl font-semibold mb-2 text-green-600">Logarithmic Time: $O(\log n)$</h4>
+                        <p class="text-stone-700">Time grows very slowly as $n$ increases. Typically involves halving the search space repeatedly.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Binary Search on a sorted array.</p>
+                    </div>
+                    <div id="tab-on" class="tab-content">
+                        <h4 class="text-2xl font-semibold mb-2 text-indigo-600">Linear Time: $O(n)$</h4>
+                        <p class="text-stone-700">Time grows directly proportional to $n$. If $n$ doubles, the time doubles.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Finding the maximum value in an unsorted array; A single loop from 1 to $n$.</p>
+                    </div>
+                    <div id="tab-onlogn" class="tab-content">
+                        <h4 class="text-2xl font-semibold mb-2 text-purple-600">Log-Linear Time: $O(n \log n)$</h4>
+                        <p class="text-stone-700">A very common and efficient complexity for sorting algorithms.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Merge Sort, Heap Sort.</p>
+                    </div>
+                    <div id="tab-on2" class="tab-content">
+                        <h4 class="text-2xl font-semibold mb-2 text-orange-600">Quadratic Time: $O(n^2)$</h4>
+                        <p class="text-stone-700">Time grows quadratically. Usually involves nested loops where both iterate up to $n$. Becomes slow for large $n$.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Selection Sort, Insertion Sort, Bubble Sort; A nested loop (e.g., `for i in n: for j in n:`).</p>
+                    </div>
+                    <div id="tab-o2n" class="tab-content">
+                        <h4 class="text-2xl font-semibold mb-2 text-red-600">Exponential Time: $O(2^n)$</h4>
+                        <p class="text-stone-700">Time doubles with every new element added to the input. Becomes intractable (unsolvable) for even moderately large $n$.</p>
+                        <p class="mt-2 text-stone-600"><strong>Example:</strong> Traveling Salesperson Problem (brute force solution).</p>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-300 py-8 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>Interactive Lesson on Algorithm Analysis</p>
+        </div>
+    </footer>
+
+    <script>
+        let asymptoticChartInstance;
+        let bigOChartInstance;
+        const bigOChartData = {};
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+                
+                const navButtons = document.querySelectorAll('header .tab-btn');
+                navButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if(btn.getAttribute('onclick') === `scrollToSection('${sectionId}')`) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        function showTab(tabGroup, tabId) {
+            const tabs = document.querySelectorAll(`#${tabId}`).parentElement.children;
+            const buttons = document.querySelectorAll(`button[onclick^="showTab('${tabGroup}'"]`);
+            
+            for (let tab of tabs) {
+                tab.classList.remove('active');
+            }
+            document.getElementById(tabId).classList.add('active');
+
+            for (let button of buttons) {
+                button.classList.remove('active');
+                if (button.getAttribute('onclick') === `showTab('${tabGroup}', '${tabId}')`) {
+                    button.classList.add('active');
+                }
+            }
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        function formatTime(ops) {
+            const seconds = ops * 0.000001;
+            if (seconds < 0.001) {
+                return `${formatNumber(ops)} µs`;
+            }
+            if (seconds < 1) {
+                return `${(seconds * 1000).toFixed(3)} ms`;
+            }
+            if (seconds < 60) {
+                return `${seconds.toFixed(3)} s`;
+            }
+            if (seconds < 3600) {
+                return `${(seconds / 60).toFixed(2)} min`;
+            }
+            return `${(seconds / 3600).toFixed(2)} hr`;
+        }
+
+        function updateScalabilityCalc() {
+            const n = parseInt(document.getElementById('inputN').value) || 0;
+            
+            const linearOps = n;
+            const quadraticOps = n * n;
+
+            document.getElementById('linearOps').textContent = formatNumber(linearOps);
+            document.getElementById('quadraticOps').textContent = formatNumber(quadraticOps);
+            
+            document.getElementById('linearTime').textContent = formatTime(linearOps);
+            document.getElementById('quadraticTime').textContent = formatTime(quadraticOps);
+        }
+
+        function initAsymptoticChart() {
+            const ctx = document.getElementById('asymptoticChart').getContext('2d');
+            const initialN = 10;
+            const labels = Array.from({ length: initialN }, (_, i) => i + 1);
+            const dataTn = labels.map(n => 5 * n * n + 100 * n + 500);
+            const dataGn = labels.map(n => 5 * n * n);
+
+            asymptoticChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'T(n) = 5n² + 100n + 500',
+                            data: dataTn,
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.1
+                        },
+                        {
+                            label: 'g(n) = 5n²',
+                            data: dataGn,
+                            borderColor: 'rgb(79, 70, 229)',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Input Size (n)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Operations' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAsymptoticChart(nValue) {
+            const n = parseInt(nValue);
+            document.getElementById('nValue').textContent = n;
+            
+            const labels = Array.from({ length: n }, (_, i) => i + 1);
+            const dataTn = labels.map(i => 5 * i * i + 100 * i + 500);
+            const dataGn = labels.map(i => 5 * i * i);
+            
+            asymptoticChartInstance.data.labels = labels;
+            asymptoticChartInstance.data.datasets[0].data = dataTn;
+            asymptoticChartInstance.data.datasets[1].data = dataGn;
+            asymptoticChartInstance.update();
+        }
+
+        function initBigOChart() {
+            const ctx = document.getElementById('bigOChart').getContext('2d');
+            const maxN = 50;
+            const labels = Array.from({ length: maxN }, (_, i) => i + 1);
+            
+            bigOChartData.labels = labels;
+            bigOChartData.datasets = [
+                {
+                    label: 'O(1)',
+                    data: labels.map(() => 1),
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    hidden: false
+                },
+                {
+                    label: 'O(log n)',
+                    data: labels.map(n => Math.log2(n)),
+                    borderColor: 'rgb(16, 185, 129)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    hidden: false
+                },
+                {
+                    label: 'O(n)',
+                    data: labels.map(n => n),
+                    borderColor: 'rgb(139, 92, 246)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    hidden: false
+                },
+                {
+                    label: 'O(n log n)',
+                    data: labels.map(n => n * Math.log2(n)),
+                    borderColor: 'rgb(168, 85, 247)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    hidden: false
+                },
+                {
+                    label: 'O(n²)',
+                    data: labels.map(n => n * n),
+                    borderColor: 'rgb(249, 115, 22)',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    hidden: false
+                },
+                {
+                    label: 'O(2^n)',
+                    data: labels.map(n => Math.pow(2, n / 4)),
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    hidden: true 
+                }
+            ];
+
+            bigOChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: bigOChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Input Size (n)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Operations' },
+                            type: 'logarithmic',
+                            min: 0.1
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleBigOData(datasetIndex) {
+            if (bigOChartInstance) {
+                const isHidden = bigOChartInstance.data.datasets[datasetIndex].hidden;
+                bigOChartInstance.data.datasets[datasetIndex].hidden = !isHidden;
+                
+                if (datasetIndex === 5 && !isHidden === false) {
+                    bigOChartInstance.options.scales.y.type = 'logarithmic';
+                }
+                
+                bigOChartInstance.update();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            updateScalabilityCalc();
+            initAsymptoticChart();
+            initBigOChart();
+            
+            const navButtons = document.querySelectorAll('header .tab-btn');
+            const sections = document.querySelectorAll('main section[id]');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        navButtons.forEach(btn => {
+                            btn.classList.toggle('active', btn.getAttribute('onclick') === `scrollToSection('${id}')`);
+                        });
+                        
+                        const mobileNav = document.querySelector('header select');
+                        mobileNav.value = id;
+                    }
+                });
+            }, { rootMargin: '-20% 0px -80% 0px' });
+            
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
